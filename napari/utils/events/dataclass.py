@@ -234,8 +234,8 @@ def _type_to_compare(type_) -> Optional[Callable[[Any, Any], bool]]:
 
     Parameters
     ----------
-    type_: type
-    type to examine
+    type_ : type
+        type to examine
 
     Returns
     -------
