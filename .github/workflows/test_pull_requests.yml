@@ -164,6 +164,15 @@ jobs:
       # for instance, on ubuntu-latest with python 3.8, it would be equivalent to this command:
       # `tox -e py38-linux-pyqt,py38-linux-pyside`
       # see tox.ini for more
+      - name: Examples with tox
+        uses: GabrielBB/xvfb-action@v1
+        with:
+          run: tox -e examples
+        env:
+          PLATFORM: ${{ matrix.platform }}
+          BACKEND: ${{ matrix.backend }}
+          TOXENV: ${{ matrix.toxenv }}
+          EXAMPLES: 'examples'
       - name: Test with tox
         uses: GabrielBB/xvfb-action@v1
         with:
