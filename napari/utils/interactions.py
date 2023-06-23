@@ -2,7 +2,7 @@ import contextlib
 import inspect
 import sys
 import warnings
-from typing import List
+from typing import List, NewType
 
 from numpydoc.docscrape import FunctionDoc
 
@@ -272,6 +272,18 @@ def _kb2mods(key_bind: KeyBinding) -> List[str]:
     return mods
 
 
+# this is the native representation of a keybinding/shorcut in a platform specific way
+# that is to say it will use symbols like ⌥,⌘ on mac and have no joiners.
+# on other platforms it may use a joiner like + have no symbols, and use the full name of the modifiers or keys.
+# this should be use only for UI display purposes when possible.
+PlatformShortcut = NewType('PlatformShortcut', str)
+
+
+# This should be used only internally inside napari with the action manager.
+# It is the representation of a shortcut that is used to register actions.
+_ShortcutStr = NewType('_ShortcutStr', str)
+
+
 class Shortcut:
     """
     Wrapper object around shortcuts,
@@ -310,31 +322,32 @@ class Shortcut:
             warnings.warn(error_msg, UserWarning, stacklevel=2)
 
     @staticmethod
-    def parse_platform(text: str) -> str:
+    def parse_platform(text: PlatformShortcut) -> str:
         """
         Parse a current_platform_specific shortcut, and return a canonical
         version separated with dashes.
 
         This replace platform specific symbols, like ↵ by Enter,  ⌘ by Command on MacOS....
         """
+        stext: str = str(text)
         # edge case, shortcut combinaison where `+` is a key.
         # this should be rare as on english keyboard + is Shift-Minus.
         # but not unheard of. In those case `+` is always at the end with `++`
         # as you can't get two non-modifier keys,  or alone.
-        if text == '+':
-            return text
+        if stext == '+':
+            return stext
         if joinchar == "+":
-            text.replace('++', '+Plus')
-            text.replace('+', '')
-            text.replace('Plus', '+')
+            stext.replace('++', '+Plus')
+            stext.replace('+', '')
+            stext.replace('Plus', '+')
         for k, v in KEY_SYMBOLS.items():
-            if text.endswith(v):
-                text = text.replace(v, k)
-                assert v not in text
+            if stext.endswith(v):
+                stext = stext.replace(v, k)
+                assert v not in stext
             else:
-                text = text.replace(v, k + '-')
+                stext = stext.replace(v, k + '-')
 
-        return text
+        return stext
 
     @property
     def qt(self) -> str:
@@ -348,7 +361,7 @@ class Shortcut:
         return str(self._kb)
 
     @property
-    def platform(self) -> str:
+    def platform(self) -> PlatformShortcut:
         """Format the given shortcut for the current platform.
 
         Replace Cmd, Ctrl, Meta...etc by appropriate symbols if relevant for the
@@ -359,12 +372,14 @@ class Shortcut:
         string
             Shortcut formatted to be displayed on current paltform.
         """
-        return ' '.join(
-            joinchar.join(
-                KEY_SYMBOLS.get(x, x)
-                for x in ([*_kb2mods(part), str(part.key)])
+        return PlatformShortcut(
+            ' '.join(
+                joinchar.join(
+                    KEY_SYMBOLS.get(x, x)
+                    for x in ([*_kb2mods(part), str(part.key)])
+                )
+                for part in self._kb.parts
             )
-            for part in self._kb.parts
         )
 
     def __str__(self):

@@ -5,11 +5,13 @@ from collections import defaultdict
 from dataclasses import dataclass
 from functools import cached_property
 from inspect import isgeneratorfunction
-from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional
+from typing import TYPE_CHECKING, Any, Callable, Dict, List, Optional, TypeVar
 
 from napari.utils.events import EmitterGroup
-from napari.utils.interactions import Shortcut
+from napari.utils.interactions import Shortcut, _ShortcutStr
 from napari.utils.translations import trans
+
+T = TypeVar('T')
 
 if TYPE_CHECKING:
     from concurrent.futures import Future
@@ -83,7 +85,7 @@ class ActionManager:
     def __init__(self) -> None:
         # map associating a name/id with a Comm
         self._actions: Dict[str, Action] = {}
-        self._shortcuts: Dict[str, List[str]] = defaultdict(list)
+        self._shortcuts: Dict[str, List[_ShortcutStr]] = defaultdict(list)
         self._stack: List[str] = []
         self._tooltip_include_action_name = False
         self.events = EmitterGroup(source=self, shorcut_changed=None)
@@ -236,7 +238,9 @@ class ActionManager:
 
         # if it's a QPushbutton, we'll remove it when it gets destroyed
         until = getattr(button, 'destroyed', None)
-        self.events.shorcut_changed.connect(_update_tt, until=until)
+        self.events.shorcut_changed.connect(
+            _update_tt, until=until  # type: ignore
+        )
 
     def bind_shortcut(self, name: str, shortcut: str) -> None:
         """
@@ -259,11 +263,11 @@ class ActionManager:
         self._validate_action_name(name)
         if shortcut in self._shortcuts[name]:
             return
-        self._shortcuts[name].append(shortcut)
+        self._shortcuts[name].append(_ShortcutStr(shortcut))
         self._update_shortcut_bindings(name)
         self._emit_shortcut_change(name, shortcut)
 
-    def unbind_shortcut(self, name: str) -> Optional[List[str]]:
+    def unbind_shortcut(self, name: str) -> Optional[List[_ShortcutStr]]:
         """
         Unbind all shortcuts for a given action name.
 
@@ -322,7 +326,7 @@ class ActionManager:
         ttip += f'[{name}]' if self._tooltip_include_action_name else ''
         return ttip
 
-    def _get_layer_shortcuts(self, layers) -> dict:
+    def _get_layer_shortcuts(self, layers: List[T]) -> dict[T, Dict[str, str]]:
         """
         Get shortcuts filtered by the given layers.
 
@@ -337,7 +341,8 @@ class ActionManager:
             Dictionary of layers with dictionaries of shortcuts to
             descriptions.
         """
-        layer_shortcuts = {}
+        # this appear to be unused.
+        layer_shortcuts: Dict[T, Dict[str, str]] = {}
         for layer in layers:
             layer_shortcuts[layer] = {}
             for name, shortcuts in self._shortcuts.items():
