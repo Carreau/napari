@@ -24,4 +24,5 @@ jobs:
           pip install requests
       - name: Remove html comments
         run: |
+          env
           python tools/remove_html_comments_from_pr.py
