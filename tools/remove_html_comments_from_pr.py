@@ -61,7 +61,10 @@ if __name__ == "__main__":
     # Replace with your repository and pull request number
     # get cuurrent repository name from github actions
     repository_name = environ.get("GH_REPO_NAME")
-    if repository_name != REPO:
+    org_name = environ.get("GH_ORG_NAME")
+    slug = f'{org_name}/{repository_name}'
+
+    if slug != REPO:
         print('Not on main repo, aborting with success')
         sys.exit(0)
 
@@ -69,4 +72,4 @@ if __name__ == "__main__":
     number = environ.get("GH_PR_NUMBER")
 
     access_token = environ.get("GITHUB_TOKEN")
-    edit_pull_request_description(repository_name, number, access_token)
+    edit_pull_request_description(slug, number, access_token)
