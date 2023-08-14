@@ -10,6 +10,7 @@ from os import environ
 
 import requests
 
+print('imported')
 REPO = 'Carreau/napari'
 
 
