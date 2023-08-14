@@ -58,18 +58,29 @@ def edit_pull_request_description(repo, pull_request_number, access_token):
 
 if __name__ == "__main__":
     print('Will inspect PR description to remove html comments.')
-    # Replace with your repository and pull request number
-    # get cuurrent repository name from github actions
-    repository_name = environ.get("GH_REPO_NAME")
-    org_name = environ.get("GH_ORG_NAME")
-    slug = f'{org_name}/{repository_name}'
 
+    # note that the env between pull_request and pull_request_target are different
+    # and the github documentation is incorrect (or at least misleading)
+    # and likely varies between pull request intra-repository and inter-repository
+    # thus we log many things to try to understand what is going on in case of failure.
+
+    # this is documented as being the slug, but appears to be only the repository name
+    # see https://docs.github.com/en/webhooks-and-events/events/github-event-types.
+    repository_name = environ.get("GH_REPO_NAME")
+    print(f'Current repository is {repository_name}')
+
+    org_name = environ.get("GH_ORG_NAME")
+    print(f'Current organization is {org_name}')
+
+    slug = f'{org_name}/{repository_name}'
+    print(f'Current slug is {slug}')
     if slug != REPO:
         print('Not on main repo, aborting with success')
         sys.exit(0)
 
     # get current PR number from github actions
     number = environ.get("GH_PR_NUMBER")
+    print(f'Current PR number is {number}')
 
     access_token = environ.get("GITHUB_TOKEN")
     edit_pull_request_description(slug, number, access_token)

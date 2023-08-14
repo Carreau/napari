@@ -28,4 +28,5 @@ jobs:
           GH_REPO_NAME: ${{ github.event.repository.name}}
           GH_ORG_NAME: ${{ github.event.org.login}}
         run: |
+          echo ${{github.event}}
           python tools/remove_html_comments_from_pr.py
