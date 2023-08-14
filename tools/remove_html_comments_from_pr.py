@@ -67,6 +67,7 @@ if __name__ == "__main__":
 
     # get current PR number from github actions
     github_ref = environ.get("GITHUB_REF")
+    print('GHR', github_ref)
     refs, pull, number, merge = github_ref.split('/')
     assert refs == 'refs'
     assert pull == 'pull'
