@@ -63,16 +63,15 @@ if __name__ == "__main__":
     # and the github documentation is incorrect (or at least misleading)
     # and likely varies between pull request intra-repository and inter-repository
     # thus we log many things to try to understand what is going on in case of failure.
+    # among other:
+    # - github.event.repository.name is not the full slug, but just the name
+    # - github.event.repository.org is empty if the repo is a normal user.
 
-    # this is documented as being the slug, but appears to be only the repository name
-    # see https://docs.github.com/en/webhooks-and-events/events/github-event-types.
-    repository_name = environ.get("GH_REPO_NAME")
-    print(f'Current repository is {repository_name}')
+    repository_url = environ.get("GH_REPO_URL")
+    print(f'Current repository is {repository_url}')
+    repository_parts = repository_url.split('/')[-2:]
 
-    org_name = environ.get("GH_ORG_NAME")
-    print(f'Current organization is {org_name}')
-
-    slug = f'{org_name}/{repository_name}'
+    slug = '/'.join(repository_parts)
     print(f'Current slug is {slug}')
     if slug != REPO:
         print('Not on main repo, aborting with success')
