@@ -10,7 +10,7 @@ from os import environ
 
 import requests
 
-REPO = 'napari/napari'
+REPO = 'Carreau/napari'
 
 
 def remove_html_comments(text):
