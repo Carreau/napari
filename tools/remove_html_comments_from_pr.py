@@ -82,4 +82,5 @@ if __name__ == "__main__":
     print(f'Current PR number is {number}')
 
     access_token = environ.get("GITHUB_TOKEN")
+    print('access_token', access_token[:5], '...')
     edit_pull_request_description(slug, number, access_token)
