@@ -60,20 +60,13 @@ if __name__ == "__main__":
     print('Will inspect PR description to remove html comments.')
     # Replace with your repository and pull request number
     # get cuurrent repository name from github actions
-    repository_name = environ.get("GITHUB_REPOSITORY")
+    repository_name = environ.get("GH_REPO_NAME")
     if repository_name != REPO:
         print('Not on main repo, aborting with success')
         sys.exit(0)
 
     # get current PR number from github actions
-    github_ref = environ.get("GITHUB_REF")
-    print('GHR', github_ref)
-    refs, pull, number, merge = github_ref.split('/')
-    assert refs == 'refs'
-    assert pull == 'pull'
-    assert merge == 'merge'
+    number = environ.get("GH_PR_NUMBER")
 
-    # Replace with your GitHub access token
     access_token = environ.get("GITHUB_TOKEN")
-
     edit_pull_request_description(repository_name, number, access_token)
