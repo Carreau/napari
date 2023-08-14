@@ -3,11 +3,13 @@ on:
   # see https://docs.github.com/en/actions/using-workflows/events-that-trigger-workflows#pull_request_target
   pull_request_target:
     types:
-      - opened
-      - synchronize
-      - reopened
-      - labeled
-      - unlabeled
+        - opened
+        - synchronize
+        - reopened
+        - labeled
+        - unlabeled
+    branches:
+        - 'main'
 # see https://docs.github.com/en/actions/using-jobs/assigning-permissions-to-jobs
 permissions:
   pull-requests: write
