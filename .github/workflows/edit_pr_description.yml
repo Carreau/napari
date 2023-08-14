@@ -26,5 +26,7 @@ jobs:
         env:
           GH_PR_NUMBER: ${{ github.event.number }}
           GH_REPO_URL: ${{ github.event.repository.url}}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
         run: |
           python tools/remove_html_comments_from_pr.py

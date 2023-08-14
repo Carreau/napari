@@ -81,6 +81,9 @@ if __name__ == "__main__":
     number = environ.get("GH_PR_NUMBER")
     print(f'Current PR number is {number}')
 
-    access_token = environ.get("GITHUB_TOKEN")
-    print('access_token', access_token[:5], '...')
+    access_token = environ.get("GH_TOKEN")
+    if access_token is None:
+        print("No access token found in the environment variables")
+        # we still don't want fail status
+        sys.exit(0)
     edit_pull_request_description(slug, number, access_token)
