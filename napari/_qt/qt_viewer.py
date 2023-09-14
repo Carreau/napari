@@ -608,7 +608,8 @@ class QtViewer(QSplitter):
                 # slice.
                 layer.events.set_data()
                 layer._update_thumbnail()
-                layer._set_highlight(force=True)
+                with layer.batch_highlight():
+                    layer.request_highlight_update()
 
     def _on_active_change(self):
         """When active layer changes change keymap handler."""

@@ -48,7 +48,8 @@ def select(layer, event):
                 layer.selected_data = {value}
         else:
             layer.selected_data = set()
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
     # Set _drag_start value here to prevent an offset when mouse_move happens
     # https://github.com/napari/napari/pull/4999
@@ -91,7 +92,8 @@ def select(layer, event):
             # update the drag up and normal vectors on the layer
             _update_drag_vectors_from_event(layer=layer, event=event)
 
-            layer._set_highlight()
+            with layer.batch_highlight():
+                layer.request_highlight_update()
         yield
 
     # only emit data once dragging has finished
@@ -114,7 +116,8 @@ def select(layer, event):
     layer._drag_box = None
     layer._drag_normal = None
     layer._drag_up = None
-    layer._set_highlight(force=True)
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 DRAG_DIST_THRESHOLD = 5
@@ -143,7 +146,8 @@ def add(layer, event):
 
 def highlight(layer, event):
     """Highlight hovered points."""
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 _T = TypeVar("_T")

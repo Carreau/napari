@@ -296,6 +296,9 @@ class Layer(KeymapProvider, MousemapProvider, ABC):
         # Needs to be imported here to avoid circular import in _source
         from napari.layers._source import current_source
 
+        self._batch_highlight_level = 0
+        self._request_highlight = 0
+
         self._source = current_source()
         self.dask_optimized_slicing = configure_dask(data, cache)
         self._metadata = dict(metadata or {})
@@ -1347,6 +1350,23 @@ class Layer(KeymapProvider, MousemapProvider, ABC):
             yield
         finally:
             self._update_properties = previous
+
+    @contextmanager
+    def batch_highlight(self):
+        self._batch_highlight_level += 1
+        try:
+            yield
+        finally:
+            if (
+                self._batch_highlight_level == 1
+                and self._request_highlight > 0
+            ):
+                self._set_highlight()
+                self._request_highlight = 0
+            self._batch_highlight_level -= 1
+
+    def request_highlight_update(self):
+        self._request_highlight += 1
 
     def _set_highlight(self, force=False):
         """Render layer highlights when appropriate.

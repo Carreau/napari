@@ -44,7 +44,8 @@ def highlight(layer: Shapes, event: MouseEvent) -> None:
     -------
     None
     """
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 def select(layer: Shapes, event: MouseEvent) -> None:
@@ -82,7 +83,8 @@ def select(layer: Shapes, event: MouseEvent) -> None:
                 layer.selected_data = {shape_under_cursor}
         else:
             layer.selected_data = set()
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
     # we don't update the thumbnail unless a shape has been moved
     update_thumbnail = False
@@ -135,14 +137,15 @@ def select(layer: Shapes, event: MouseEvent) -> None:
     elif layer._is_selecting:
         layer.selected_data = layer._data_view.shapes_in_box(layer._drag_box)
         layer._is_selecting = False
-        layer._set_highlight()
-
+        with layer.batch_highlight():
+            layer.request_highlight_update()
     layer._is_moving = False
     layer._drag_start = None
     layer._drag_box = None
     layer._fixed_vertex = None
     layer._moving_value = (None, None)
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
     if update_thumbnail:
         layer._update_thumbnail()
@@ -310,7 +313,8 @@ def initiate_polygon_draw(
     layer._value = (layer.nshapes - 1, 1)
     layer._moving_value = copy(layer._value)
     layer._is_creating = True
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 def add_path_polygon_lasso(layer: Shapes, event: MouseEvent) -> None:
@@ -631,7 +635,8 @@ def _drag_selection_box(layer: Shapes, coordinates: Tuple[float, ...]) -> None:
     if layer._drag_start is None:
         layer._drag_start = coord
     layer._drag_box = np.array([layer._drag_start, coord])
-    layer._set_highlight()
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 def _set_drag_start(

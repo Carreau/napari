@@ -150,7 +150,8 @@ def select_all_shapes(layer: Shapes):
     """Select all shapes in the current view slice."""
     if layer._mode in (Mode.DIRECT, Mode.SELECT):
         layer.selected_data = set(np.nonzero(layer._data_view._displayed)[0])
-        layer._set_highlight()
+        with layer.batch_highlight():
+            layer.request_highlight_update()
 
 
 @register_shapes_action(trans._('Delete any selected shapes'))

@@ -2731,7 +2731,8 @@ class Shapes(Layer):
         super()._update_draw(
             scale_factor, corner_pixels_displayed, shape_threshold
         )
-        self._set_highlight(force=True)
+        with self.batch_highlight():
+            self.request_highlight_update()
 
     def _get_value(self, position):
         """Value of the data at a position in data coordinates.

@@ -635,12 +635,13 @@ class Points(Layer):
         self._reset_editable()
 
     def _on_selection(self, selected):
-        if selected:
-            self._set_highlight()
-        else:
-            self._highlight_box = None
-            self._highlight_index = []
-            self.events.highlight()
+        with self.batch_highlight():
+            if selected:
+                self.request_highlight_update()
+            else:
+                self._highlight_box = None
+                self._highlight_index = []
+                self.events.highlight()
 
     @property
     def features(self):
@@ -1373,7 +1374,8 @@ class Points(Layer):
 
         # Update properties based on selected points
         if not len(self._selected_data):
-            self._set_highlight()
+            with self.batch_highlight():
+                self.request_highlight_update()
             return
         index = list(self._selected_data)
         with self.block_update_properties():
@@ -1406,7 +1408,8 @@ class Points(Layer):
             if all(p is not None for p in unique_properties.values()):
                 self.current_properties = unique_properties
 
-        self._set_highlight()
+        with self.batch_highlight():
+            self.request_highlight_update()
 
     def interaction_box(self, index) -> Optional[np.ndarray]:
         """Create the interaction box around a list of points in view.
@@ -1455,7 +1458,8 @@ class Points(Layer):
         elif mode != Mode.SELECT or self._mode != Mode.SELECT:
             self._selected_data_stored = set()
 
-        self._set_highlight()
+        with self.batch_highlight():
+            self.request_highlight_update()
         return mode
 
     @property
@@ -1606,7 +1610,8 @@ class Points(Layer):
         super()._update_draw(
             scale_factor, corner_pixels_displayed, shape_threshold
         )
-        self._set_highlight(force=True)
+        with self.batch_highlight():
+            self.request_highlight_update()
 
     def _get_value(self, position) -> Optional[int]:
         """Index of the point at a given 2D position in data coordinates.
@@ -1837,8 +1842,8 @@ class Points(Layer):
                 return_indices=True,
             )[2]
         )
-        with self.events.highlight.blocker():
-            self._set_highlight(force=True)
+        with self.batch_highlight():
+            self.request_highlight_update()
 
     def _set_highlight(self, force=False):
         """Render highlights of shapes including boundaries, vertices,

@@ -88,7 +88,8 @@ def select_all_in_slice(layer: Points):
                 deferred=True,
             )
         )
-    layer._set_highlight(force=True)
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 @register_points_action(
@@ -115,7 +116,8 @@ def select_all_data(layer: Points):
                 deferred=True,
             )
         )
-    layer._set_highlight(force=True)
+    with layer.batch_highlight():
+        layer.request_highlight_update()
 
 
 @register_points_action(trans._('Delete selected points'))
