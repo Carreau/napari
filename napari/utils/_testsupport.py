@@ -4,16 +4,27 @@ import sys
 import warnings
 from contextlib import suppress
 from dataclasses import dataclass
+from importlib.metadata import version as package_version
 from typing import TYPE_CHECKING, List, Tuple
 from unittest.mock import patch
 from weakref import WeakSet
 
 import pytest
+from packaging.version import parse as parse_version
 
 if TYPE_CHECKING:
     from pytest import FixtureRequest
 
 _SAVE_GRAPH_OPNAME = "--save-leaked-object-graph"
+
+
+if parse_version(package_version("numpy")) >= parse_version("1.24.0"):
+    from numpy.testing import assert_array_equal
+else:
+    from numpy import array_equal
+
+    def assert_array_equal(x, y, err_msg='', verbose=True, *, strict=False):
+        assert array_equal(x, y), err_msg
 
 
 def _empty(*_, **__):
