@@ -20,7 +20,7 @@ import numpy as np
 
 # TODO decide where types should be defined to have single place for them
 from npe2.types import LayerName as LayerTypeName
-from typing_extensions import TypedDict, get_args
+from typinng import TypedDict, get_args
 
 if TYPE_CHECKING:
     # dask zarr should be imported as `import dask.array as da` But here it is used only in type annotation to

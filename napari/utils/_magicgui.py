@@ -15,9 +15,7 @@ from __future__ import annotations
 
 import weakref
 from functools import lru_cache, partial
-from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Type
-
-from typing_extensions import get_args
+from typing import TYPE_CHECKING, Any, List, Optional, Tuple, Type, get_args
 
 from napari.utils._proxies import PublicOnlyProxy
 

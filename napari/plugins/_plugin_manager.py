@@ -13,6 +13,7 @@ from typing import (
     Optional,
     Set,
     Tuple,
+    TypedDict,
     Union,
 )
 from warnings import warn
@@ -23,7 +24,6 @@ from napari_plugin_engine import (
 )
 from napari_plugin_engine.hooks import HookCaller
 from pydantic import ValidationError
-from typing_extensions import TypedDict
 
 from napari.plugins import hook_specifications
 from napari.settings import get_settings
